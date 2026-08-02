@@ -1,0 +1,6 @@
+.native/
+zig-out/
+.zig-cache/
+node_modules/
+src/core.generated.zig
+src/rt.zig
