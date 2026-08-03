@@ -41,7 +41,7 @@ pub fn main(init: std.process.Init) !void {
         .markup = .{ .source = app_markup, .watch_path = "src/app.native", .io = init.io },
         .theme = comptime runner.manifestThemePack(),
         .theme_accent = comptime runner.manifestThemeAccent(),
-        .status_item = .{ .icon_path = "assets/sarvam-logo.png", .tooltip = "Sarvam Translate", .items = &tray_items },
+        .status_item = .{ .icon_path = "assets/sarvam-menu-bar-icon.png", .tooltip = "Sarvam Translate", .items = &tray_items },
     };
     if (comptime @hasDecl(core, "commandMsg")) options.on_command = core.commandMsg;
 
