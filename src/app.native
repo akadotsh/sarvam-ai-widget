@@ -1,9 +1,9 @@
-<column gap="12" padding="16">
+<column gap="16" padding="20">
   <if test="{not configured}">
     <column gap="16" grow="1" main="center">
-      <column gap="4">
+      <column gap="6">
         <text size="display">Welcome to Sarvam Translate</text>
-        <text foreground="text_muted" wrap="true">Add your Sarvam API key to start translating natural Indian language with Mayura.</text>
+        <text foreground="text_muted" wrap="true">Translate naturally across Indian languages with Mayura.</text>
       </column>
 
       <if test="{checkingKey}">
@@ -16,18 +16,23 @@
       </if>
       <else>
       <card background="surface" radius="lg">
-        <column gap="10" padding="14">
-          <text>Connect Sarvam AI</text>
-          <text-field text="{apiKeyText}" placeholder="Paste your api-subscription-key" on-input="api_key_edit" autofocus="true" />
-          <text foreground="text_muted" wrap="true">The key is saved securely in your macOS Keychain. It is never written to this app or included in its build.</text>
+        <column gap="14" padding="16">
+          <column gap="4">
+            <text size="heading">Connect Sarvam AI</text>
+            <text foreground="text_muted" wrap="true">Your API key stays in your macOS Keychain.</text>
+          </column>
+          <column gap="6">
+            <text>Sarvam API key</text>
+            <text-field text="{apiKeyText}" placeholder="Paste your api-subscription-key" on-input="api_key_edit" autofocus="true" />
+          </column>
           <if test="{failed}">
-            <text foreground="destructive">Enter an API key to continue.</text>
+            <text foreground="destructive" wrap="true">Enter a valid API key. If it is valid, check Keychain access and try again.</text>
           </if>
           <if test="{savingKey}">
-            <button variant="primary" disabled="true">Saving securely...</button>
+            <button variant="primary" disabled="true">Saving API key...</button>
           </if>
           <else>
-            <button variant="primary" on-press="configure_api_key">Continue</button>
+            <button variant="primary" on-press="configure_api_key">Save API key</button>
           </else>
         </column>
       </card>
@@ -36,49 +41,67 @@
   </if>
   <else>
     <row cross="center">
-      <column grow="1" gap="2">
+      <column grow="1" gap="4">
         <text size="heading">Sarvam Translate</text>
         <text foreground="text_muted">Real Indian language, in your voice</text>
       </column>
       <badge>mayura:v1</badge>
-      <button size="sm" variant="ghost" on-press="change_api_key">Key</button>
+      <if test="{savingKey}">
+        <badge>Saving key...</badge>
+      </if>
+      <else>
+        <if test="{keySaveFailed}">
+          <badge>Key not saved</badge>
+        </if>
+      </else>
+      <button size="sm" variant="ghost" on-press="change_api_key">API key</button>
     </row>
 
-    <column gap="6">
-      <text foreground="text_muted">Translate to</text>
-      <button-group gap="6">
-        <button selected="{targetLabel == 'Hindi'}" on-press="set_hindi">Hindi</button>
-        <button selected="{targetLabel == 'Tamil'}" on-press="set_tamil">Tamil</button>
-        <button selected="{targetLabel == 'Telugu'}" on-press="set_telugu">Telugu</button>
-        <button selected="{targetLabel == 'English'}" on-press="set_english">English</button>
-      </button-group>
-    </column>
+    <card background="surface" radius="lg">
+      <column gap="14" padding="16">
+        <column gap="6">
+          <text foreground="text_muted">Translate to</text>
+          <button-group gap="6">
+            <button selected="{targetLabel == 'Hindi'}" on-press="set_hindi">Hindi</button>
+            <button selected="{targetLabel == 'Tamil'}" on-press="set_tamil">Tamil</button>
+            <button selected="{targetLabel == 'Telugu'}" on-press="set_telugu">Telugu</button>
+            <button selected="{targetLabel == 'English'}" on-press="set_english">English</button>
+          </button-group>
+        </column>
+
+        <column gap="6">
+          <text foreground="text_muted">Tone</text>
+          <button-group gap="6">
+            <button selected="{tone == 'formal'}" on-press="set_formal">Formal</button>
+            <button selected="{tone == 'modern'}" on-press="set_modern">Modern</button>
+            <button selected="{tone == 'classic'}" on-press="set_classic">Classic</button>
+            <button selected="{tone == 'code_mixed'}" on-press="set_code_mixed">Code mixed</button>
+          </button-group>
+        </column>
+
+        <row gap="8" cross="center">
+          <text foreground="text_muted" grow="1">Numeral format</text>
+          <button selected="{nativeNumerals}" on-press="set_native_numerals">Native</button>
+          <button selected="{not nativeNumerals}" on-press="set_international_numerals">International</button>
+        </row>
+      </column>
+    </card>
 
     <column gap="6">
-      <text foreground="text_muted">Your text</text>
+      <text foreground="text_muted">Text to translate</text>
       <textarea text="{inputText}" placeholder="Type it how you would say it..." on-input="input_edit" height="128" />
     </column>
 
-    <column gap="6">
-      <text foreground="text_muted">Tone</text>
-      <button-group gap="6">
-        <button selected="{tone == 'formal'}" on-press="set_formal">Formal</button>
-        <button selected="{tone == 'modern'}" on-press="set_modern">Modern</button>
-        <button selected="{tone == 'classic'}" on-press="set_classic">Classic</button>
-        <button selected="{tone == 'code_mixed'}" on-press="set_code_mixed">Code mixed</button>
-      </button-group>
-    </column>
-
-    <row gap="8" cross="center">
-      <text foreground="text_muted" grow="1">Numerals</text>
-      <button selected="{nativeNumerals}" on-press="set_native_numerals">Native</button>
-      <button selected="{not nativeNumerals}" on-press="set_international_numerals">International</button>
-    </row>
-
-    <button variant="primary" on-press="translate">Translate to {targetLabel}</button>
+    <if test="{loading}">
+      <button variant="primary" disabled="true">Translating to {targetLabel}...</button>
+    </if>
+    <else>
+      <button variant="primary" on-press="translate">Translate to {targetLabel}</button>
+    </else>
 
     <card background="surface" radius="lg">
-      <column gap="8" padding="12">
+      <column gap="8" padding="14">
+        <text>Translation</text>
         <text foreground="text_muted">{status}</text>
         <text wrap="true">{output}</text>
       </column>

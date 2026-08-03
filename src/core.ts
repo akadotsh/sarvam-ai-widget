@@ -16,6 +16,7 @@ export interface Model {
   readonly configured: boolean;
   readonly checkingKey: boolean;
   readonly savingKey: boolean;
+  readonly keySaveFailed: boolean;
   readonly loading: boolean;
   readonly failed: boolean;
 }
@@ -40,12 +41,13 @@ export type Msg =
   | { readonly kind: "key_load_failed"; readonly reason: Uint8Array }
   | { readonly kind: "key_saved"; readonly code: number; readonly output: Uint8Array }
   | { readonly kind: "key_save_failed"; readonly reason: Uint8Array }
+  | { readonly kind: "key_save_timed_out"; readonly timestamp: number }
   | { readonly kind: "translated"; readonly status: number; readonly body: Uint8Array }
   | { readonly kind: "translate_failed"; readonly reason: Uint8Array }
   | { readonly kind: "open_widget" }
   | { readonly kind: "quit" };
 
-export const viewUnbound = ["apiKeyDraft", "inputDraft", "target", "checkingKey", "savingKey", "loading", "failed", "key_loaded", "key_load_failed", "key_saved", "key_save_failed", "translated", "translate_failed", "open_widget", "quit"] as const;
+export const viewUnbound = ["apiKeyDraft", "inputDraft", "target", "checkingKey", "savingKey", "keySaveFailed", "loading", "failed", "key_loaded", "key_load_failed", "key_saved", "key_save_failed", "key_save_timed_out", "translated", "translate_failed", "open_widget", "quit"] as const;
 
 const security = asciiBytes("/usr/bin/security");
 const service = asciiBytes("dev.native_sdk.sarvam-translate");
@@ -56,9 +58,16 @@ function editor(text: Uint8Array): TextEditState {
   return { text, selection: { anchor: text.length, focus: text.length }, composition: null };
 }
 
+function lineTerminated(value: Uint8Array): Uint8Array {
+  const output = new Uint8Array(value.length + 1);
+  output.set(value);
+  output[value.length] = 10;
+  return output;
+}
+
 export function initialModel(): [Model, Command<Msg>] {
   return [
-    { apiKeyDraft: editor(new Uint8Array(0)), apiKeyText: new Uint8Array(0), inputDraft: editor(defaultInput), inputText: defaultInput, output: new Uint8Array(0), target: "hindi", tone: "formal", nativeNumerals: true, configured: false, checkingKey: true, savingKey: false, loading: false, failed: false },
+    { apiKeyDraft: editor(new Uint8Array(0)), apiKeyText: new Uint8Array(0), inputDraft: editor(defaultInput), inputText: defaultInput, output: new Uint8Array(0), target: "hindi", tone: "formal", nativeNumerals: true, configured: false, checkingKey: true, savingKey: false, keySaveFailed: false, loading: false, failed: false },
     Cmd.spawn([security, asciiBytes("find-generic-password"), asciiBytes("-s"), service, asciiBytes("-a"), account, asciiBytes("-w")], { key: "load-key", collect: true, exit: "key_loaded", err: "key_load_failed" }),
   ];
 }
@@ -71,8 +80,9 @@ export function targetLabel(model: Model): Uint8Array {
 }
 export function status(model: Model): Uint8Array {
   if (model.loading) return asciiBytes("Translating with Sarvam AI...");
-  if (model.failed) return asciiBytes("Could not translate. Check your key and try again.");
-  if (model.output.length === 0) return asciiBytes("Your translation will appear here.");
+  if (model.failed) return asciiBytes("Translation did not complete. Check your API key and try again.");
+  if (model.keySaveFailed) return asciiBytes("Your API key is available for this session but could not be saved to Keychain.");
+  if (model.output.length === 0) return asciiBytes("Choose a language, then translate your text.");
   return asciiBytes("Translation ready.");
 }
 
@@ -92,7 +102,7 @@ export function update(model: Model, msg: Msg): Model | [Model, Command<Msg>] {
       const draft = applyTextInputEvent(model.inputDraft, msg.edit, 4000) ?? model.inputDraft;
       return { ...model, inputDraft: draft, inputText: draft.text, failed: false };
     }
-    case "change_api_key": return { ...model, configured: false, failed: false };
+    case "change_api_key": return { ...model, configured: false, savingKey: false, keySaveFailed: false, failed: false };
     case "set_hindi": return { ...model, target: "hindi" };
     case "set_tamil": return { ...model, target: "tamil" };
     case "set_telugu": return { ...model, target: "telugu" };
@@ -105,16 +115,20 @@ export function update(model: Model, msg: Msg): Model | [Model, Command<Msg>] {
     case "set_international_numerals": return { ...model, nativeNumerals: false };
     case "configure_api_key": {
       if (model.apiKeyText.length === 0) return { ...model, failed: true };
-      const next: Model = { ...model, savingKey: true, failed: false };
-      return [next, Cmd.spawn([security, asciiBytes("add-generic-password"), asciiBytes("-U"), asciiBytes("-s"), service, asciiBytes("-a"), account, asciiBytes("-w")], { key: "save-key", stdin: model.apiKeyText, collect: true, exit: "key_saved", err: "key_save_failed" })];
+      const next: Model = { ...model, configured: true, savingKey: true, keySaveFailed: false, failed: false };
+      return [next, Cmd.batch([
+        Cmd.spawn([security, asciiBytes("add-generic-password"), asciiBytes("-U"), asciiBytes("-s"), service, asciiBytes("-a"), account, asciiBytes("-w")], { key: "save-key", stdin: lineTerminated(model.apiKeyText), collect: true, exit: "key_saved", err: "key_save_failed" }),
+        Cmd.delay("save-key-timeout", 5000, "key_save_timed_out"),
+      ])];
     }
     case "key_loaded": {
       if (msg.code !== 0 || msg.output.length === 0) return { ...model, checkingKey: false };
       return { ...model, apiKeyDraft: editor(msg.output.trim()), apiKeyText: msg.output.trim(), configured: true, checkingKey: false };
     }
     case "key_load_failed": return { ...model, checkingKey: false };
-    case "key_saved": return { ...model, savingKey: false, configured: msg.code === 0, failed: msg.code !== 0 };
-    case "key_save_failed": return { ...model, savingKey: false, failed: true };
+    case "key_saved": return [{ ...model, savingKey: false, keySaveFailed: msg.code !== 0 }, Cmd.cancel("save-key-timeout")];
+    case "key_save_failed": return [{ ...model, savingKey: false, keySaveFailed: true }, Cmd.cancel("save-key-timeout")];
+    case "key_save_timed_out": return [{ ...model, savingKey: false, keySaveFailed: true }, Cmd.cancel("save-key")];
     case "translate": {
       if (model.apiKeyText.length === 0 || model.inputText.length === 0) return { ...model, failed: true, output: asciiBytes("Enter your Sarvam API key and text to translate.") };
       const next: Model = { ...model, loading: true, failed: false, output: new Uint8Array(0) };
