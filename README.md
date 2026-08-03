@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/sarvam-logo.png" alt="Sarvam Translate logo" width="180" />
+  <img src="assets/sarvam-logo-readme.png" alt="Sarvam Translate logo" width="180" />
 </p>
 
 # Sarvam Translate
