@@ -3,7 +3,6 @@
     <column gap="16" grow="1" main="center">
       <column gap="6">
         <text size="display">Welcome to Sarvam AI Widget</text>
-        <text foreground="text_muted" wrap="true">Translate naturally across Indian languages with Mayura.</text>
       </column>
 
       <if test="{checkingKey}">
@@ -19,11 +18,10 @@
         <column gap="14" padding="16">
           <column gap="4">
             <text size="heading">Connect Sarvam AI</text>
-            <text foreground="text_muted" wrap="true">Your API key stays in your macOS Keychain.</text>
           </column>
           <column gap="6">
             <text>Sarvam API key</text>
-            <text-field text="{apiKeyText}" placeholder="Paste your api-subscription-key" on-input="api_key_edit" autofocus="true" />
+            <text-field text="{apiKeyText}" placeholder="Paste your Sarvam API key" on-input="api_key_edit" autofocus="true" />
           </column>
           <if test="{failed}">
             <text foreground="destructive" wrap="true">Enter a valid API key. If it is valid, check Keychain access and try again.</text>
