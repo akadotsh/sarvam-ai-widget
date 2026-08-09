@@ -4,5 +4,8 @@
   "description": "A native macOS menu-bar widget powered by Sarvam AI.",
   "dependencies": {
     "@native-sdk/core": "0.7.1"
+  },
+  "devDependencies": {
+    "@native-sdk/cli": "0.7.1"
   }
 }
