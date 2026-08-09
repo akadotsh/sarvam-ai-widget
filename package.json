@@ -1,7 +1,7 @@
 {
-  "name": "native-demo-desktop-app",
+  "name": "sarvam-ai-widget",
   "private": true,
-  "description": "Sarvam AI Widget's TypeScript tooling and local Native SDK build dependency.",
+  "description": "A native macOS menu-bar widget powered by Sarvam AI.",
   "dependencies": {
     "@native-sdk/core": "0.7.1"
   },
