@@ -1,8 +1,8 @@
 .{
-    .id = "dev.native_sdk.sarvam-translate",
-    .name = "sarvam-translate",
-    .display_name = "Sarvam Translate",
-    .description = "A compact native menu-bar translator powered by Sarvam AI.",
+    .id = "dev.native_sdk.sarvam-ai-widget",
+    .name = "sarvam-ai-widget",
+    .display_name = "Sarvam AI Widget",
+    .description = "A compact native macOS menu-bar widget powered by Sarvam AI.",
     .version = "0.1.0",
     .icons = .{"assets/sarvam-logo.png"},
     .platforms = .{"macos"},
@@ -12,7 +12,7 @@
         .windows = .{
             .{
                 .label = "main",
-                .title = "Sarvam Translate",
+                .title = "Sarvam AI Widget",
                 .width = 460,
                 .height = 720,
                 .min_width = 420,
@@ -21,7 +21,7 @@
                 .restore_policy = "center_on_primary",
                 .close_policy = "hide",
                 .views = .{
-                    .{ .label = "main-canvas", .kind = "gpu_surface", .fill = true, .role = "Sarvam translator widget", .accessibility_label = "Sarvam Translate", .gpu_backend = "metal", .gpu_pixel_format = "bgra8_unorm", .gpu_present_mode = "timer", .gpu_alpha_mode = "opaque", .gpu_color_space = "srgb", .gpu_vsync = true },
+                    .{ .label = "main-canvas", .kind = "gpu_surface", .fill = true, .role = "Sarvam AI widget", .accessibility_label = "Sarvam AI Widget", .gpu_backend = "metal", .gpu_pixel_format = "bgra8_unorm", .gpu_present_mode = "timer", .gpu_alpha_mode = "opaque", .gpu_color_space = "srgb", .gpu_vsync = true },
                 },
             },
         },

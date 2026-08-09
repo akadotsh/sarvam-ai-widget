@@ -14,7 +14,7 @@ const native_sdk = @import("native_sdk");
 pub fn build(b: *std.Build) void {
     const sdk = b.dependency("native_sdk", .{});
     transpileCore(b, sdk);
-    native_sdk.addApp(b, sdk, .{ .name = "sarvam-translate", .main = "src/host.zig" });
+    native_sdk.addApp(b, sdk, .{ .name = "sarvam-ai-widget", .main = "src/host.zig" });
 }
 
 // Native SDK's generated TypeScript runner does not expose a menu-bar status

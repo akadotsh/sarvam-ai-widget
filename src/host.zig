@@ -1,4 +1,4 @@
-//! Native boundary for the macOS menu-bar item. App behavior lives in core.ts.
+//! Native boundary for the Sarvam AI Widget macOS menu-bar item. App behavior lives in core.ts.
 
 const std = @import("std");
 const runner = @import("runner");
@@ -13,11 +13,11 @@ const Adapter = native_sdk.TsUiApp(core);
 const App = Adapter.App;
 const canvas_label = "main-canvas";
 const shell_views = [_]native_sdk.ShellView{
-    .{ .label = canvas_label, .kind = .gpu_surface, .fill = true, .role = "Sarvam translator widget", .accessibility_label = "Sarvam Translate", .gpu_backend = .metal, .gpu_pixel_format = .bgra8_unorm, .gpu_present_mode = .timer, .gpu_alpha_mode = .@"opaque", .gpu_color_space = .srgb, .gpu_vsync = true },
+    .{ .label = canvas_label, .kind = .gpu_surface, .fill = true, .role = "Sarvam AI widget", .accessibility_label = "Sarvam AI Widget", .gpu_backend = .metal, .gpu_pixel_format = .bgra8_unorm, .gpu_present_mode = .timer, .gpu_alpha_mode = .@"opaque", .gpu_color_space = .srgb, .gpu_vsync = true },
 };
 const shell_windows = [_]native_sdk.ShellWindow{.{
     .label = "main",
-    .title = "Sarvam Translate",
+    .title = "Sarvam AI Widget",
     .width = 460,
     .height = 720,
     .min_width = 420,
@@ -30,20 +30,20 @@ const shell_scene: native_sdk.ShellConfig = .{ .windows = &shell_windows };
 pub const app_markup = @embedFile("app.native");
 
 const tray_items = [_]native_sdk.TrayMenuItem{
-    .{ .id = 1, .label = "Open Translator", .command = "sarvam.open" },
+    .{ .id = 1, .label = "Open Sarvam AI Widget", .command = "sarvam.open" },
     .{ .separator = true },
-    .{ .id = 2, .label = "Quit Sarvam Translate", .command = "sarvam.quit" },
+    .{ .id = 2, .label = "Quit Sarvam AI Widget", .command = "sarvam.quit" },
 };
 
 pub fn main(init: std.process.Init) !void {
     var options: Adapter.Options = .{
-        .name = "sarvam-translate",
+        .name = "sarvam-ai-widget",
         .scene = shell_scene,
         .canvas_label = canvas_label,
         .markup = .{ .source = app_markup, .watch_path = "src/app.native", .io = init.io },
         .theme = comptime runner.manifestThemePack(),
         .theme_accent = comptime runner.manifestThemeAccent(),
-        .status_item = .{ .icon_path = "assets/sarvam-menu-bar-icon.png", .tooltip = "Sarvam Translate", .items = &tray_items },
+        .status_item = .{ .icon_path = "assets/sarvam-menu-bar-icon.png", .tooltip = "Sarvam AI Widget", .items = &tray_items },
     };
     if (comptime @hasDecl(core, "commandMsg")) options.on_command = core.commandMsg;
 
@@ -51,9 +51,9 @@ pub fn main(init: std.process.Init) !void {
     defer app_state.destroy();
 
     try runner.runWithOptions(app_state.app(), .{
-        .app_name = "sarvam-translate",
-        .window_title = "Sarvam Translate",
-        .bundle_id = "dev.native_sdk.sarvam-translate",
+        .app_name = "sarvam-ai-widget",
+        .window_title = "Sarvam AI Widget",
+        .bundle_id = "dev.native_sdk.sarvam-ai-widget",
         .icon_path = "assets/sarvam-logo.png",
         .default_frame = native_sdk.geometry.RectF.init(0, 0, 460, 720),
         .restore_state = false,

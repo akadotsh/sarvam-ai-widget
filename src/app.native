@@ -2,7 +2,7 @@
   <if test="{not configured}">
     <column gap="16" grow="1" main="center">
       <column gap="6">
-        <text size="display">Welcome to Sarvam Translate</text>
+        <text size="display">Welcome to Sarvam AI Widget</text>
         <text foreground="text_muted" wrap="true">Translate naturally across Indian languages with Mayura.</text>
       </column>
 
@@ -42,7 +42,7 @@
   <else>
     <row cross="center">
       <column grow="1" gap="4">
-        <text size="heading">Sarvam Translate</text>
+        <text size="heading">Sarvam AI Widget</text>
         <text foreground="text_muted">Real Indian language, in your voice</text>
       </column>
       <if test="{savingKey}">

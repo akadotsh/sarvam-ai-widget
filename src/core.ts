@@ -50,7 +50,7 @@ export type Msg =
 export const viewUnbound = ["apiKeyDraft", "inputDraft", "target", "checkingKey", "savingKey", "keySaveFailed", "loading", "failed", "key_loaded", "key_load_failed", "key_saved", "key_save_failed", "key_save_timed_out", "translated", "translate_failed", "open_widget", "quit"] as const;
 
 const security = asciiBytes("/usr/bin/security");
-const service = asciiBytes("dev.native_sdk.sarvam-translate");
+const service = asciiBytes("dev.native_sdk.sarvam-ai-widget");
 const account = asciiBytes("sarvam-api-key");
 const defaultInput = asciiBytes("Hey, talk like you normally do. Kal office mein 3 meetings thi and salary 45000 credit ho gayi.");
 
