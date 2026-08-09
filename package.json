@@ -1,7 +1,7 @@
 {
   "name": "sarvam-ai-widget",
   "private": true,
-  "description": "Editor and versioning surface only: stock TypeScript tooling resolves @native-sdk/core from here. The native CLI never reads it and builds with node_modules absent.",
+  "description": "A native macOS menu-bar widget powered by Sarvam AI.",
   "dependencies": {
     "@native-sdk/core": "0.7.1"
   }
