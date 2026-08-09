@@ -5,17 +5,15 @@
 # Sarvam AI Widget
 
 A native macOS menu-bar widget built with [Native SDK](https://native-sdk.dev/).
-It starts with text translation powered by Sarvam AI and is designed to grow
-with more AI features over time.
 
-The widget supports Hindi, Tamil, Telugu, and English targets, Sarvam's four
-Mayura tones, and native or international numeral formats.
+## Supported features
+
+- Translate to Hindi, Tamil, Telugu, or English
 
 ## Downloads
 
-Download the latest macOS installer from the repository's
-[GitHub Releases](https://github.com/akadotsh/sarvam-ai-widget/releases).
-Open the downloaded `.dmg` and drag **Sarvam AI Widget** to Applications.
+Install the latest build of Sarvam AI Widget from the
+[Releases page](https://github.com/akadotsh/sarvam-ai-widget/releases).
 
 - macOS: available
 - Windows: coming soon
@@ -23,12 +21,3 @@ Open the downloaded `.dmg` and drag **Sarvam AI Widget** to Applications.
 
 Development releases are ad-hoc signed. Before a public launch, configure an
 Apple Developer ID signature and notarization.
-
-## Create a release
-
-Push a version tag to build and publish the matching GitHub Release:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
